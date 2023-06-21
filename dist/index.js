@@ -2965,7 +2965,7 @@ class Linter {
       if (fs.existsSync(".chktexrc")) {
         logs = run(`chktex -q -f%f:%k:%l:%m -l .chktexrc -I1 ${file}`).stdout;
       } else {
-        logs = run(`chktex -q f%f:%k:%l:%m -I1 ${file}`).stdout;
+        logs = run(`chktex -q -f%f:%k:%l:%m -I1 ${file}`).stdout;
       }
       result += "\n" + logs.trim();
     });
@@ -2994,16 +2994,19 @@ class Linter {
         });
         if (lintResult.status === "success") {
           lintResult.status = "neutral";
+          core.log("Change status to neutral");
         }
-      }
-      if (kind === "Error") {
+      } else if (kind === "Error") {
         lintResult.error.push({
           path: file,
           firstLine: line,
           lastLine: line,
           message
         });
-        lintResult.status = "failed";
+        if (lintResult.status !== "failure") {
+          lintResult.status = "failure";
+          core.log("Change status to failure");
+        }
       }
     }
 
@@ -3353,10 +3356,7 @@ async function runAction() {
   const summary = getSummary(lintResult);
   const sha = git.getHeadSha();
 
-  core.info(`
-    LaTeX Lint found ${summary}
-    (${lintResult.isSuccess ? "success" : "failure"})
-  `);
+  core.info(`LaTeX Lint found ${summary} (${lintResult.status})`);
   core.endGroup();
 
   core.startGroup("Create check runs with commit annotations");
@@ -3374,7 +3374,7 @@ async function runAction() {
   if (!groupClosed) {
     core.endGroup();
   }
-  if (!lintResult.isSuccess) {
+  if (lintResult.status === "failure") {
     core.setFailed(`
       Linting failures detected.
       See check runs with annotations for details.
