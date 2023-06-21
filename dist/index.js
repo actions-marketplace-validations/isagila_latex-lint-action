@@ -2994,7 +2994,6 @@ class Linter {
         });
         if (lintResult.status === "success") {
           lintResult.status = "neutral";
-          core.log("Change status to neutral");
         }
       } else if (kind === "Error") {
         lintResult.error.push({
@@ -3005,7 +3004,6 @@ class Linter {
         });
         if (lintResult.status !== "failure") {
           lintResult.status = "failure";
-          core.log("Change status to failure");
         }
       }
     }
