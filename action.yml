@@ -1,0 +1,27 @@
+name: LaTeX lint action
+author: isagila
+description: GitHub Action for detecting lint errors in LaTeX
+
+inputs:
+  github_token:
+    description: The GitHub token used to authenticated with GitHub
+    required: false
+    default: ${{ github.token }}
+
+  working_directory:
+    description: Working directory where action should start
+    required: false
+    default: "."
+
+  files:
+    description: List of .tex files which should be linted
+    required: false
+    default: ""
+
+runs:
+  using: node16
+  main: dist/index.js
+
+branding:
+  icon: check-circle
+  color: blue
