@@ -1,4 +1,4 @@
-name: LaTeX Lint action
+name: LaTeX lint
 author: isagila
 description: GitHub Action for detecting lint errors in LaTeX
 
